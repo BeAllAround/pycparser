@@ -6,7 +6,9 @@ import copy
 # your site-packages/ with setup.py
 sys.path.extend(['.', '..'])
 
-from pycparser import c_parser, c_ast
+from pycparser import c_parser, c_generator, c_ast
+
+
 
 import pycparser
 
@@ -38,9 +40,15 @@ if __name__ == "__main__":
     '''
     # int d1 = 1;
 
+    generator = c_generator.CGenerator()
+
     parser = c_parser.CParser(yacctab=yacctab)
 
     node_ast = parser.parse(_code, filename='<none>', debug=False) # debug=True
+
+    for ext in node_ast.ext:
+        print(ext)
+        print('c_source:', generator.visit(ext) + ';')
 
     node_ast.show()
     # print(node_ast)
