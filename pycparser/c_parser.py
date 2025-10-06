@@ -530,6 +530,11 @@ class CParser(PLYParser):
     # several in one line), so we wrap the function definition
     # into a list as well, to make the return value of
     # external_declaration homogeneous.
+    def p_external_declaration_0(self, p):
+        """ external_declaration    : statement
+        """
+        p[0] = [p[1]]
+        
     def p_external_declaration_1(self, p):
         """ external_declaration    : function_definition
         """
