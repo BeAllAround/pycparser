@@ -290,7 +290,6 @@ class LRParser:
         self.errorfunc = errorf
         self.set_defaulted_states()
         self.errorok = True
-        print('LRParser:', lrtab.lr_action.get(0))
 
     def errok(self):
         self.errorok = True
@@ -1050,8 +1049,6 @@ class LRParser:
         sym.type = '$end'
         symstack.append(sym)
         state = 0
-        # print('defaulted_states:', defaulted_states)
-        # print('self.action.items():', self.action.items())
         while True:
             # Get the next symbol on the input.  If a lookahead symbol
             # is already set, we just use that. Otherwise, we'll pull
@@ -1074,9 +1071,7 @@ class LRParser:
             else:
                 t = defaulted_states[state]
 
-	    
-            print('t:', sym, t, symstack, state, lookahead != None and lookahead.type, actions[state])
-            # print('state:', state, state not in defaulted_states, actions[state].get(ltype), defaulted_states.get(state))
+
             if t is not None:
                 if t > 0:
                     # shift a symbol on the stack
@@ -1176,7 +1171,6 @@ class LRParser:
                 if t == 0:
                     n = symstack[-1]
                     result = getattr(n, 'value', None)
-                    # print('result:', result)
                     return result
 
             if t is None:
@@ -1202,7 +1196,6 @@ class LRParser:
                         if errtoken and not hasattr(errtoken, 'lexer'):
                             errtoken.lexer = lexer
                         self.state = state
-                        print('errtoken:', errtoken, symstack, sym, t)
                         tok = call_errorfunc(self.errorfunc, errtoken, self)
                         if self.errorok:
                             # User must have done some kind of panic
@@ -1623,9 +1616,8 @@ class Grammar(object):
         p = Production(pnumber, prodname, syms, prodprec, func, file, line)
         self.Productions.append(p)
         self.Prodmap[map] = p
-        # print('self.Prodmap[map] = p:', self.Prodmap[map])
+
         # Add to the global productions list
-        # print('self.Nonterminals:', self.Nonterminals)
         try:
             self.Prodnames[prodname].append(p)
         except KeyError:
@@ -1989,7 +1981,7 @@ class LRTable(object):
         else:
             exec('import %s' % module)
             parsetab = sys.modules[module]
-        # print('read_table parse_tab:', module, sys.modules, isinstance(module, types.ModuleType), parsetab._lr_action.get(0))
+
         if parsetab._tabversion != __tabversion__:
             raise VersionError('yacc table file version is out of date')
 
@@ -2017,7 +2009,6 @@ class LRTable(object):
         tabversion = pickle.load(in_f)
         if tabversion != __tabversion__:
             raise VersionError('yacc table file version is out of date')
-        print('read_pickle:', filename, in_f,)
         self.lr_method = pickle.load(in_f)
         signature      = pickle.load(in_f)
         self.lr_action = pickle.load(in_f)
@@ -2738,12 +2729,6 @@ class LRGeneratedTable(LRTable):
 
         basemodulename = tabmodule.split('.')[-1]
         filename = os.path.join(outputdir, basemodulename) + '.py'
-
-        # print('filename:', filename)
-    
-        # print('signature:', [signature])
-        # return
-
         try:
             f = open(filename, 'w')
 
@@ -2763,8 +2748,6 @@ _lr_signature = %r
             # Factor out names to try and make smaller
             if smaller:
                 items = {}
-                
-                print('self.lr_action:', self.lr_action)
 
                 for s, nd in self.lr_action.items():
                     for name, v in nd.items():
@@ -2998,7 +2981,6 @@ class ParserReflect(object):
                     parts.append(f[3])
         except (TypeError, ValueError):
             pass
-        # print('parts:::',  self.pfuncs )
         return ''.join(parts)
 
     # -----------------------------------------------------------------------------
@@ -3245,7 +3227,7 @@ def yacc(method='LALR', debug=yaccdebug, module=None, tabmodule=tab_module, star
 
     if errorlog is None:
         errorlog = PlyLogger(sys.stderr)
-    print('yacc [module]:', module)
+
     # Get the module dictionary used for the parser
     if module:
         _items = [(k, getattr(module, k)) for k in dir(module)]
@@ -3255,10 +3237,6 @@ def yacc(method='LALR', debug=yaccdebug, module=None, tabmodule=tab_module, star
             pdict['__file__'] = sys.modules[pdict['__module__']].__file__
     else:
         pdict = get_caller_module_dict(2)
-        
-    # print('[pdict]:', pdict)
-    
-    pdict['p_expression'] = module.p_expression
 
     if outputdir is None:
         # If no output directory is set, the location of the output files
@@ -3290,21 +3268,16 @@ def yacc(method='LALR', debug=yaccdebug, module=None, tabmodule=tab_module, star
     if start is not None:
         pdict['start'] = start
 
-    #for k in pdict:
-    #	print(k, pdict[k])
     # Collect parser information from the dictionary
     pinfo = ParserReflect(pdict, log=errorlog)
     pinfo.get_all()
 
     if pinfo.error:
         raise YaccError('Unable to build parser')
-    
-    # print('pdict::', pdict)
+
     # Check signature against table files (if any)
     signature = pinfo.signature()
 
-    # print('[yacc.py] signature:', signature)
-    print('file:', tabmodule, picklefile)
     # Read the tables
     try:
         lr = LRTable()
@@ -3312,12 +3285,9 @@ def yacc(method='LALR', debug=yaccdebug, module=None, tabmodule=tab_module, star
             read_signature = lr.read_pickle(picklefile)
         else:
             read_signature = lr.read_table(tabmodule)
-        
-        print('read_signature:', read_signature, read_signature == signature, optimize)
-        
         if optimize or (read_signature == signature):
             try:
-                lr.bind_callables(pdict)
+                lr.bind_callables(pinfo.pdict)
                 parser = LRParser(lr, pinfo.error_func)
                 parse = parser.parse
                 return parser
@@ -3338,7 +3308,7 @@ def yacc(method='LALR', debug=yaccdebug, module=None, tabmodule=tab_module, star
         else:
             debuglog = NullLogger()
 
-    debuglog.info('Created by PLY versionn %s (http://www.dabeaz.com/ply)', __version__)
+    debuglog.info('Created by PLY version %s (http://www.dabeaz.com/ply)', __version__)
 
     errors = False
 
@@ -3351,39 +3321,19 @@ def yacc(method='LALR', debug=yaccdebug, module=None, tabmodule=tab_module, star
 
     # Create a grammar object
     grammar = Grammar(pinfo.tokens)
-    
-    print('grammar tokens:', pinfo.tokens[0])
 
     # Set precedence level for terminals
     for term, assoc, level in pinfo.preclist:
         try:
-            print('pinfo.preclist:', term, assoc, level)
             grammar.set_precedence(term, assoc, level)
         except GrammarError as e:
             errorlog.warning('%s', e)
 
-    print('pinfo.grammar:', pinfo.grammar)
-    
-    
-    _later = list()
-    
     # Add productions to the grammar
     for funcname, gram in pinfo.grammar:
         file, line, prodname, syms = gram
         try:
-            # print('grammar.add_production:', [ prodname, syms, funcname, file, line ])
             grammar.add_production(prodname, syms, funcname, file, line)
-        except GrammarError as e:
-            errorlog.error('%s', e)
-            errors = True
-            
-    for funcname, gram in pinfo.grammar:
-        file, line, prodname, syms = gram
-        try:
-            pass
-            # print('grammar.add_production:', [ prodname, syms, funcname, file, line ])
-            # if(prodname == 'expression'):
-            	# grammar.add_production(prodname, syms, funcname, file, line)
         except GrammarError as e:
             errorlog.error('%s', e)
             errors = True
@@ -3537,7 +3487,7 @@ def yacc(method='LALR', debug=yaccdebug, module=None, tabmodule=tab_module, star
             errorlog.warning("Couldn't create %r. %s" % (picklefile, e))
 
     # Build the parser
-    lr.bind_callables(pdict)
+    lr.bind_callables(pinfo.pdict)
     parser = LRParser(lr, pinfo.error_func)
 
     parse = parser.parse

@@ -38,6 +38,8 @@ class PLYParser(object):
             <rulename>_opt
         """
         optname = rulename + '_opt'
+        
+        print('rulename:', rulename)
 
         def optrule(self, p):
             p[0] = p[1]
@@ -120,6 +122,7 @@ def _create_param_rules(cls, func):
     template rule function `func`, and attaches them to `cls`. The rule
     function's parameters must be accessible via its `_params` attribute.
     """
+    print('_create_param_rules, func._params:', func._params)
     for xxx, yyy in func._params:
         # Use the template method's body for each new method
         def param_rule(self, p):
