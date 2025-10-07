@@ -10,7 +10,7 @@ from tests.test_util import cpp_supported, cpp_path, cpp_args
 
 import yacctab
 
-print(yacctab)
+print(__name__, yacctab)
 
 _c_parser = c_parser.CParser(
                 lex_optimize=False,
