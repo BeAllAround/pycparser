@@ -8,11 +8,15 @@ sys.path.insert(0, '.')
 from pycparser import c_parser, c_generator, c_ast, parse_file
 from tests.test_util import cpp_supported, cpp_path, cpp_args
 
+import yacctab
+
+print(yacctab)
+
 _c_parser = c_parser.CParser(
                 lex_optimize=False,
                 yacc_debug=True,
                 yacc_optimize=False,
-                yacctab='yacctab')
+                yacctab=yacctab)
 
 
 def compare_asts(ast1, ast2):
