@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------
 # ** ATTENTION **
 # This code was automatically generated from the file:
-# _c_ast.cfg
+# ./pycparser/_c_ast.cfg
 #
 # Do not modify it directly. Modify the configuration file and
 # run the generator again.

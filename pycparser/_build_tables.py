@@ -19,8 +19,8 @@ sys.path[0:0] = ['.', '..']
 
 # Generate c_ast.py
 from _ast_gen import ASTCodeGenerator
-ast_gen = ASTCodeGenerator('_c_ast.cfg')
-ast_gen.generate(open('c_ast.py', 'w'))
+ast_gen = ASTCodeGenerator('./pycparser/_c_ast.cfg')
+ast_gen.generate(open('./pycparser/c_ast.py', 'w'))
 
 from pycparser import c_parser
 
