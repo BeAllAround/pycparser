@@ -10,11 +10,22 @@ from pycparser import c_parser
 from pycparser.c_ast import *
 from pycparser.c_parser import ParseError
 
+import yacctab
+
+assert yacctab.__file__ == os.getcwd() + '/yacctab.py'
+
+ex_declaration_statement = False
+for lr_prod in yacctab._lr_productions:
+    if lr_prod[0] == 'external_declaration -> statement':
+        ex_declaration_statement = True
+        break
+assert ex_declaration_statement
+
 _c_parser = c_parser.CParser(
                 lex_optimize=False,
                 yacc_debug=True,
                 yacc_optimize=False,
-                yacctab='yacctab')
+                yacctab=yacctab)
 
 
 def expand_decl(decl):
