@@ -37,6 +37,11 @@ if __name__ == "__main__":
     void main() {
     }
 
+    int d;
+    d;
+
+    d = 44;
+
     '''
     # int d1 = 1;
 
