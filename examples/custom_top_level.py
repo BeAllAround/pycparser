@@ -78,7 +78,7 @@ class Transform:
             # print(_type, self.dest_stack)
             if(len(self.dest_stack) != 0 and (self.dest_stack[-1] == c_ast.FuncDecl)):
                 self.dest_stack.pop()
-                self.dest_stack.append(c_ast.FuncDecl) # keep the dest of the return. Similar to (return (signature, c_ast.FuncDecl))
+                self.dest_stack.append(c_ast.FuncDecl) # keep the dest of the return. Similar to (return (signature, c_ast.FuncDecl)) to keep the origin if the inner node is FuncDecl
             else:
                 len(self.ptr_decl_stack) != 0 and self.ptr_decl_stack.pop()
                 s_type += '*'
