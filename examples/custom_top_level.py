@@ -40,7 +40,7 @@ class Transform:
     def extract_cast(self, node, origin = c_ast.Decl):
         _type = type(node)
 
-        s_type = '' # type as string
+        s_type = '' # cast type as string
 
         if(_type == c_ast.Decl):
             return self.extract_cast(node.type)
@@ -142,6 +142,7 @@ if __name__ == "__main__":
     # _code = '''const int (*dd)(void, void);'''
     # _code = '''const int*** (*dd)(void, void);'''
     # _code = '''const int** (*dd)(void v0, void v1);'''
+    _code = '''int** (*dd)(int (*d1)(void v0, void v1), void v2);'''
     # _code = '''int** (*dd)(int* (*d1)(void v0, void v1), void v2);'''
     # _code = '''int** (*dd)(int* (*)(void, void), void);'''
     # _code = 'int* d;';
