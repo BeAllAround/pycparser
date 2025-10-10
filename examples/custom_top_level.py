@@ -24,8 +24,6 @@ if __name__ == "__main__":
 
     typedef struct _struct my_struct;
 
-    void func_d() {}
-
     1;
     1+1;
     (int*)d1;
@@ -34,15 +32,16 @@ if __name__ == "__main__":
 
     int* (*dd)(void, void);
 
-    void main() {
-    }
 
     int d;
     d;
 
     d = 44;
 
+    void func_d() { aaaaa; printf("AA", a); }
+
     '''
+    # void main() {}
     # int d1 = 1;
 
     generator = c_generator.CGenerator()
@@ -50,11 +49,12 @@ if __name__ == "__main__":
     parser = c_parser.CParser(yacctab=yacctab)
 
     node_ast = parser.parse(_code, filename='<none>', debug=False) # debug=True
+    print(dir(c_ast))
 
     for ext in node_ast.ext:
         print(ext)
         print('c_source:', generator.visit(ext) + ';')
 
-    node_ast.show()
+    # node_ast.show()
     # print(node_ast)
 
