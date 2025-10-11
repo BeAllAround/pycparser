@@ -38,6 +38,8 @@ if __name__ == "__main__":
 
     void func_d() { aaaaa; printf("AA", a); }
 
+    int bb = 1 + 1;
+
     '''
     # void main() {}
     # int d1 = 1;
@@ -49,9 +51,10 @@ if __name__ == "__main__":
     node_ast = parser.parse(_code, filename='<none>', debug=False) # debug=True
     
     assert node_ast != None
-    # print(node_ast)
+
+    print(node_ast)
     
-    node_ast.show()
+    # node_ast.show()
     
 
     
