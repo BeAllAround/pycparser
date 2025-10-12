@@ -44,7 +44,7 @@ if __name__ == "__main__":
     int (*(*f13(void))(void *))( int );
     int* (*(*f13(int d))(void *n))(int fd, int(*d)() );
 
-    int (*(*f13(int d))(void *n))(int fd, int(*d)() );
+    int* (**(***f13(int d))(void *n))(int fd, int(*d)() );
 
     '''
     # void main() {}
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     print(node_ast.ext[-1])
     print(generator.visit(node_ast.ext[-1].type))
     print(generator._generate_type(node_ast.ext[-1].type))
-    print(generator._type_of(node_ast.ext[-1].type))
+    # print(generator._type_of(node_ast.ext[-1].type))
     
     # node_ast.show()
     
