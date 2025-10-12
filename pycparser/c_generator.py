@@ -329,6 +329,7 @@ class CGenerator(object):
 
     def visit_Typename(self, n):
         return self._generate_type(n.type)
+        
 
     def visit_Union(self, n):
         return self._generate_struct_union_enum(n, 'union')
@@ -478,7 +479,73 @@ class CGenerator(object):
                                        emit_declname = emit_declname)
         else:
             return self.visit(n)
+    
+    def _type_of_generate_decl(self, n):
+        """ Generation from a Decl node.
+        """
+        s = ''
+        if n.funcspec: s = ' '.join(n.funcspec) + ' '
+        if n.storage: s += ' '.join(n.storage) + ' '
+        if n.align: s += self.visit(n.align[0]) + ' '
+        s += self._type_of(n.type)
+        return s
+        
+    def _type_of(self, n, modifiers=[], emit_declname = False):
+        """ Recursive generation from a type node. n is the type node.
+            modifiers collects the PtrDecl, ArrayDecl and FuncDecl modifiers
+            encountered on the way down to a TypeDecl, to allow proper
+            generation from it.
+        """
+        typ = type(n)
+        #~ print(n, modifiers)
 
+        if typ == c_ast.TypeDecl:
+            s = ''
+            if n.quals: s += ' '.join(n.quals) + ' '
+            s += self.visit(n.type)
+
+            nstr = n.declname if n.declname and emit_declname else ''
+            # Resolve modifiers.
+            # Wrap in parens to distinguish pointer to array and pointer to
+            # function syntax.
+            #
+            for i, modifier in enumerate(modifiers):
+                if isinstance(modifier, c_ast.ArrayDecl):
+                    if (i != 0 and
+                        isinstance(modifiers[i - 1], c_ast.PtrDecl)):
+                            nstr = '(' + nstr + ')'
+                    nstr += '['
+                    if modifier.dim_quals:
+                        nstr += ' '.join(modifier.dim_quals) + ' '
+                    nstr += self.visit(modifier.dim) + ']'
+                elif isinstance(modifier, c_ast.FuncDecl):
+                    if (i != 0 and
+                        isinstance(modifiers[i - 1], c_ast.PtrDecl)):
+                            nstr = '(' + nstr + ')'
+                    nstr += '(' + self.visit(modifier.args) + ')'
+                    #                     if(modifier.args == None) continue
+		    # nstr += '(' + ', '.join([self._type_of(param) for param in modifier.args.params]) + ')' # self.visit(modifier.args) + ')'
+                elif isinstance(modifier, c_ast.PtrDecl):
+                    if modifier.quals:
+                        nstr = '* %s%s' % (' '.join(modifier.quals),
+                                           ' ' + nstr if nstr else '')
+                    else:
+                        nstr = '*' + nstr
+            if nstr: s += ' ' + nstr
+            return s
+        elif typ == c_ast.Decl:
+            return self._type_of_generate_decl(n.type)
+        elif typ == c_ast.Typename:
+            return self._type_of(n.type, emit_declname = emit_declname)
+        elif typ == c_ast.IdentifierType:
+            return ' '.join(n.names) + ' '
+        elif typ in (c_ast.ArrayDecl, c_ast.PtrDecl, c_ast.FuncDecl):
+            return self._type_of(n.type, modifiers + [n],
+                                       emit_declname = emit_declname)
+        else:
+            return self.visit(n)
+    
+    
     def _parenthesize_if(self, n, condition):
         """ Visits 'n' and returns its string representation, parenthesized
             if the condition function applied to the node returns True.

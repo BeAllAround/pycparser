@@ -40,6 +40,11 @@ if __name__ == "__main__":
 
     int bb = 1 + 1;
 
+
+    int (*(*f13(void))(void *))( int );
+
+    int (*(*f13(void))(void *))(int fd, int(*d)() );
+
     '''
     # void main() {}
     # int d1 = 1;
@@ -52,7 +57,10 @@ if __name__ == "__main__":
     
     assert node_ast != None
 
-    print(node_ast)
+    print(node_ast.ext[-1])
+    print(generator.visit(node_ast.ext[-1].type))
+    print(generator._generate_type(node_ast.ext[-1].type))
+    print(generator._type_of(node_ast.ext[-1].type))
     
     # node_ast.show()
     
