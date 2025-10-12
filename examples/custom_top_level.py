@@ -42,8 +42,9 @@ if __name__ == "__main__":
 
 
     int (*(*f13(void))(void *))( int );
+    int* (*(*f13(int d))(void *n))(int fd, int(*d)() );
 
-    int (*(*f13(void))(void *))(int fd, int(*d)() );
+    int (*(*f13(int d))(void *n))(int fd, int(*d)() );
 
     '''
     # void main() {}
