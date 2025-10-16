@@ -47,6 +47,7 @@ if __name__ == "__main__":
     int* (**(***f13(int d))(void *n))(int fd, int(*d)() );
 
     '''
+    # const char* _string = "AAA";
     # void main() {}
     # int d1 = 1;
 
@@ -61,12 +62,9 @@ if __name__ == "__main__":
     print(node_ast.ext[-1])
     print(generator.visit(node_ast.ext[-1].type))
     print(generator._generate_type(node_ast.ext[-1].type))
-    # print(generator._type_of(node_ast.ext[-1].type))
+    print(generator._type_of(node_ast.ext[-1].type))
     
     # node_ast.show()
-    
-
-    
 
     # print(ext)
     # print('c_source:', generator.visit(ext) + ';')
