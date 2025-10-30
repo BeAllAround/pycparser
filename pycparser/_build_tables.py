@@ -17,8 +17,8 @@ import importlib
 import sys
 sys.path[0:0] = ['.', '..']
 
-prefix = 'pycparser/'
-# prefix = '' # For prod
+# prefix = 'pycparser/'
+prefix = '' # For prod
 
 # Generate c_ast.py
 from _ast_gen import ASTCodeGenerator
