@@ -17,10 +17,13 @@ import importlib
 import sys
 sys.path[0:0] = ['.', '..']
 
+prefix = 'pycparser/'
+# prefix = '' # For prod
+
 # Generate c_ast.py
 from _ast_gen import ASTCodeGenerator
-ast_gen = ASTCodeGenerator('./_c_ast.cfg')
-ast_gen.generate(open('./c_ast.py', 'w'))
+ast_gen = ASTCodeGenerator('./' + prefix + '_c_ast.cfg')
+ast_gen.generate(open('./' + prefix + 'c_ast.py', 'w'))
 
 from pycparser import c_parser
 

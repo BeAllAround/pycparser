@@ -9,12 +9,15 @@
 from . import c_ast
 
 
+def _visit_id_func_wrapper(c_generator_ref, id_node):
+    return id_node.name
+
 class CGenerator(object):
     """ Uses the same visitor pattern as c_ast.NodeVisitor, but modified to
         return a value from each visit method, using string accumulation in
         generic_visit.
     """
-    def __init__(self, reduce_parentheses=False):
+    def __init__(self, reduce_parentheses=False, visit_id_func_wrapper=_visit_id_func_wrapper):
         """ Constructs C-code generator
 
             reduce_parentheses:
@@ -24,6 +27,8 @@ class CGenerator(object):
         # the _make_indent method.
         self.indent_level = 0
         self.reduce_parentheses = reduce_parentheses
+        self.inside_of_func_def_body = False
+        self.visit_id_func_wrapper = visit_id_func_wrapper
 
     def _make_indent(self):
         return ' ' * self.indent_level
@@ -42,7 +47,7 @@ class CGenerator(object):
         return n.value
 
     def visit_ID(self, n):
-        return n.name
+        return self.visit_id_func_wrapper(self, n)
 
     def visit_Pragma(self, n):
         ret = '#pragma'
@@ -199,7 +204,11 @@ class CGenerator(object):
     def visit_FuncDef(self, n):
         decl = self.visit(n.decl)
         self.indent_level = 0
+        # Set to be in the FunDef
+        self.inside_of_func_def_body = True
         body = self.visit(n.body)
+        # Reset
+        self.inside_of_func_def_body = False
         if n.param_decls:
             knrdecls = ';\n'.join(self.visit(p) for p in n.param_decls)
             return decl + '\n' + knrdecls + ';\n' + body + '\n'
