@@ -1640,46 +1640,48 @@ class TestCParser_fundamentals(TestCParser_base):
         self.assertEqual(list(map(type, f2.body.block_items)),
             [Decl, Decl, Assignment, Return])
 
-        f3 = parse_fdef('''
-        char* zzz(p, c)
-        long p, *c;
-        {
-            int a;
-            char b;
+        # REMOVED AND DEPRICATED. IT BREAKS EXTERNAL_DECL_6 | STATEMENT IN ORDER TO PARSE ALL TOKENS AT TOP LEVELS
+        # THIS BREAKS THE FUNCCALL AT TOP LEVEL: _func_d(1, 2); See examples/custom_top_level.py SINCE "f(a, b) int a; float b; { ... }" is a void function definition
+        # THE UNIT TESTS FOR THIS USE CASE ARE REMOVED AS WELL
+        # f3 = parse_fdef('''
+        # char* zzz(p, c)
+        # long p, *c;
+        # {
+        #    int a;
+        #    char b;
+        #    a = b + 2;
+        #    return 3;
+        # }
+        # ''')
 
-            a = b + 2;
-            return 3;
-        }
-        ''')
+        # self.assertEqual(fdef_decl(f3),
+        #    ['Decl', 'zzz',
+        #        ['FuncDecl',
+        #            [   ['ID', 'p'],
+        #                ['ID', 'c']],
+        #            ['PtrDecl', ['TypeDecl', ['IdentifierType', ['char']]]]]])
 
-        self.assertEqual(fdef_decl(f3),
-            ['Decl', 'zzz',
-                ['FuncDecl',
-                    [   ['ID', 'p'],
-                        ['ID', 'c']],
-                    ['PtrDecl', ['TypeDecl', ['IdentifierType', ['char']]]]]])
+        # self.assertEqual(list(map(type, f3.body.block_items)),
+        #    [Decl, Decl, Assignment, Return])
 
-        self.assertEqual(list(map(type, f3.body.block_items)),
-            [Decl, Decl, Assignment, Return])
-
-        self.assertEqual(expand_decl(f3.param_decls[0]),
-            ['Decl', 'p', ['TypeDecl', ['IdentifierType', ['long']]]])
-        self.assertEqual(expand_decl(f3.param_decls[1]),
-            ['Decl', 'c', ['PtrDecl', ['TypeDecl', ['IdentifierType', ['long']]]]])
+        # self.assertEqual(expand_decl(f3.param_decls[0]),
+        #    ['Decl', 'p', ['TypeDecl', ['IdentifierType', ['long']]]])
+        # self.assertEqual(expand_decl(f3.param_decls[1]),
+        #    ['Decl', 'c', ['PtrDecl', ['TypeDecl', ['IdentifierType', ['long']]]]])
 
         # function return values and parameters may not have type information
-        f4 = parse_fdef('''
-        que(p)
-        {
-            return 3;
-        }
-        ''')
+        # f4 = parse_fdef('''
+        # que(p)
+        # {
+        #    return 3;
+        # }
+        # ''')
 
-        self.assertEqual(fdef_decl(f4),
-            ['Decl', 'que',
-                ['FuncDecl',
-                    [['ID', 'p']],
-                    ['TypeDecl', ['IdentifierType', ['int']]]]])
+        # self.assertEqual(fdef_decl(f4),
+        #    ['Decl', 'que',
+        #        ['FuncDecl',
+        #            [['ID', 'p']],
+        #            ['TypeDecl', ['IdentifierType', ['int']]]]])
 
     def test_static_assert(self):
         f1 = self.parse('''

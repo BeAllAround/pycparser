@@ -601,25 +601,28 @@ class CParser(PLYParser):
 
     # In function definitions, the declarator can be followed by
     # a declaration list, for old "K&R style" function definitios.
+    # REMOVED AND DEPRICATED. IT BREAKS EXTERNAL_DECL_6 | STATEMENT IN ORDER TO PARSE ALL TOKENS AT TOP LEVELS
+    # THIS BREAKS THE FUNCCALL AT TOP LEVEL: _func_d(1, 2); See examples/custom_top_level.py SINCE "f(a, b) int a; float b; { ... }" is a void function definition
+    # THE UNIT TESTS FOR THIS USE CASE ARE REMOVED AS WELL
+    # def p_function_definition_1(self, p):
+    #    """ function_definition : id_declarator declaration_list_opt compound_statement
+    #    """
+    #    # no declaration specifiers - 'int' becomes the default type
+    #    spec = dict(
+    #        qual=[],
+    #        alignment=[],
+    #        storage=[],
+    #        type=[c_ast.IdentifierType(['int'],
+    #                                   coord=self._token_coord(p, 1))],
+    #        function=[])
+    #
+    #    p[0] = self._build_function_definition(
+    #        spec=spec,
+    #        decl=p[1],
+    #        param_decls=p[2],
+    #        body=p[3])
+
     def p_function_definition_1(self, p):
-        """ function_definition : id_declarator declaration_list_opt compound_statement
-        """
-        # no declaration specifiers - 'int' becomes the default type
-        spec = dict(
-            qual=[],
-            alignment=[],
-            storage=[],
-            type=[c_ast.IdentifierType(['int'],
-                                       coord=self._token_coord(p, 1))],
-            function=[])
-
-        p[0] = self._build_function_definition(
-            spec=spec,
-            decl=p[1],
-            param_decls=p[2],
-            body=p[3])
-
-    def p_function_definition_2(self, p):
         """ function_definition : declaration_specifiers id_declarator declaration_list_opt compound_statement
         """
         spec = p[1]

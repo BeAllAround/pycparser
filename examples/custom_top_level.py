@@ -16,6 +16,17 @@ import yacctab
 print(yacctab)
 
 
+# Top Level External Declaration Statements includes the following parsing checks/passes:
+# STRUCT DECLARATION OK
+# TYPEDEF STRUCT DECLARATION OK
+# BINARY EXPRESSION OK
+# UNARY CAST OK
+# FUNCTION DECLARATION OK
+# DECLARATION OK
+# ASSIGNMENT EXPRESSION OK
+# FUNCTION DEFINITION OK
+# FUNC CALL OK
+
 if __name__ == "__main__":
     _code = '''
 
@@ -36,6 +47,10 @@ if __name__ == "__main__":
 
     d = 44;
 
+    d = d();
+
+    _func_d(1, 2);
+
     void func_d() { aaaaa; printf("AA", a); }
 
     int bb = 1 + 1;
@@ -45,6 +60,7 @@ if __name__ == "__main__":
     int* (*(*f13(int d))(void *n))(int fd, int(*d)() );
 
     int* (**(***f13(int d))(void *n))(int fd, int(*d)() );
+
 
     '''
     # const char* _string = "AAA";
